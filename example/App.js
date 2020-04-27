@@ -14,7 +14,7 @@ import {Header, Colors} from 'react-native/Libraries/NewAppScreen';
 import React, {useState} from 'react';
 import moment from 'moment';
 
-const App = () => {
+export const App = () => {
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
@@ -63,7 +63,7 @@ const App = () => {
           <Header />
           {global.HermesInternal !== null && (
             <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
+              <Text testID="hermesIndicator" style={styles.footer}>Engine: Hermes</Text>
             </View>
           )}
           <View style={styles.body}>
@@ -80,6 +80,7 @@ const App = () => {
                     setColor(text.toLowerCase());
                   }}
                   placeholder="color"
+                  testID="colorInput"
                 />
               </View>
               <View style={styles.button}>
@@ -188,5 +189,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-export default App;
