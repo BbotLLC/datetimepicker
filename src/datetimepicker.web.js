@@ -12,10 +12,12 @@ export default function RNDateTimePicker({
   maximumDate,
 }){
 
-  var style = document.createElement("style");
-  style.textContent = styles;
-  document.getElementsByTagName("head")[0].appendChild(style);
-
+   if(!document.getElementById('simplepickerstyle')) {
+    let style = document.createElement("style");
+    style.setAttribute('id', 'simplepickerstyle');
+    style.textContent = styles;
+    document.getElementsByTagName("head")[0].appendChild(style);
+  }
   const picker = new SimplePicker();
 
   switch(mode){
