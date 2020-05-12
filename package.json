@@ -71,7 +71,8 @@
     "react-native": ">=0.60"
   },
   "dependencies": {
-    "invariant": "^2.2.4"
+    "invariant": "^2.2.4",
+    "simplepicker": "^2.0.1"
   },
   "detox": {
     "test-runner": "jest",
