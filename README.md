@@ -7,6 +7,8 @@
 
 React Native date & time picker component for iOS and Android
 
+## This fork adds basic web support by integrating simplepicker
+
 <table>
   <tr><td colspan=2><strong>iOS</strong></td></tr>
   <tr>
