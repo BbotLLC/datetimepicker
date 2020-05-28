@@ -12,6 +12,10 @@ export default function RNDateTimePicker({
   minimumDate,
   maximumDate,
 }){
+  if(document.getElementsByClassName('simplepicker-wrapper').length){
+    return <Fragment/>;
+  }
+
   if(!document.getElementById('simplepickerstyle')) {
     let style = document.createElement("style");
     style.setAttribute('id', 'simplepickerstyle');
@@ -35,6 +39,7 @@ export default function RNDateTimePicker({
     onChange({}, date);
     // for some reason, we need to close here:
     picker.close();
+    picker.$simplepickerWrapper.remove();
   });
   picker.on('close', () => {
     // null `event` object to mirror android/ios behaviour
