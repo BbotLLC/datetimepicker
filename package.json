@@ -72,7 +72,7 @@
   },
   "dependencies": {
     "invariant": "^2.2.4",
-    "simplepicker": "^2.0.1"
+    "simplepicker": "priyank-p/simplepicker#master"
   },
   "detox": {
     "test-runner": "jest",
