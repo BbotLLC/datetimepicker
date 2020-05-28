@@ -17,8 +17,10 @@ export default function RNDateTimePicker({
     style.setAttribute('id', 'simplepickerstyle');
     style.textContent = styles;
     document.getElementsByTagName("head")[0].appendChild(style);
-    picker = new SimplePicker();
   }
+  picker = new SimplePicker({
+    selectedDate: value
+  });
 
   switch(mode){
     case 'date':
@@ -35,12 +37,13 @@ export default function RNDateTimePicker({
     picker.close();
   });
   picker.on('close', () => {
-    onChange({})
+    // null `event` object to mirror android/ios behaviour
+    onChange({}, value)
+    picker.$simplepickerWrapper.remove();
   });
 
   // only show if not already shown (prevents duplicate)
   if(!picker.$simplepickerWrapper.classList.contains('active')) {
-    picker.reset(value);
     picker.open();
   }
   return <Fragment></Fragment>
