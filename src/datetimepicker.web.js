@@ -25,6 +25,7 @@ export default function RNDateTimePicker({
   picker = new SimplePicker({
     selectedDate: value
   });
+  picker.reset(value); // todo: no clue why this works but without it the initial value isn't set
 
   switch(mode){
     case 'date':
