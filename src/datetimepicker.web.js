@@ -37,14 +37,14 @@ export default function RNDateTimePicker({
 
   picker._eventHandlers = {}; // hacky, but no 'off' function
   picker.on('submit', (date, readableDate) => {
+    if (maximumDate && date > maximumDate) date = maximumDate;
+    if (minimumDate && minimumDate > date) date = minimumDate;
     onChange({}, date);
     // for some reason, we need to close here:
     picker.close();
     picker.$simplepickerWrapper.remove();
   });
   picker.on('close', () => {
-    if (maximumDate && date > maximumDate) date = maximumDate;
-    if (minimumDate && minimumDate > date) date = minimumDate;
     // null `event` object to mirror android/ios behaviour
     onChange({}, value)
     picker.$simplepickerWrapper.remove();
