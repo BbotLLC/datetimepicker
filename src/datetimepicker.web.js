@@ -43,6 +43,8 @@ export default function RNDateTimePicker({
     picker.$simplepickerWrapper.remove();
   });
   picker.on('close', () => {
+    if (maximumDate && date > maximumDate) date = maximumDate;
+    if (minimumDate && minimumDate > date) date = minimumDate;
     // null `event` object to mirror android/ios behaviour
     onChange({}, value)
     picker.$simplepickerWrapper.remove();
