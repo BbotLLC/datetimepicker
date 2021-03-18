@@ -11,7 +11,7 @@ import {
   DISMISS_ACTION,
   NEUTRAL_BUTTON_ACTION,
   ANDROID_DISPLAY,
-  ANDROID_MODE,
+  ANDROID_MODE, MODE_DATETIME,
 } from './constants';
 import pickers from './picker';
 import invariant from 'invariant';
@@ -95,12 +95,30 @@ export default function RNDateTimePicker(props: AndroidNativeProps) {
       });
 
       picker.then(
-        function resolve({action, day, month, year, minute, hour}) {
+        async function resolve({action, day, month, year, minute, hour}) {
           const date = new Date(valueTimestamp);
           const event: AndroidEvent = {
             type: 'set',
             nativeEvent: {},
           };
+
+          if(mode === MODE_DATETIME){
+            let timePicker = await getPicker({
+              mode: 'time',
+              value: date.setFullYear(year, month, day),
+              display,
+              is24Hour,
+              minimumDate,
+              maximumDate,
+              neutralButtonLabel,
+              minuteInterval,
+            })
+            action = timePicker.action;
+            if(action === TIME_SET_ACTION) {
+              hour = timePicker.hour;
+              minute = timePicker.minute;
+            }
+          }6
 
           switch (action) {
             case DATE_SET_ACTION:
