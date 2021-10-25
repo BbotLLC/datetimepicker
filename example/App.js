@@ -9,6 +9,7 @@ import {
   Platform,
   TextInput,
   useColorScheme,
+  Switch,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SegmentedControl from '@react-native-community/segmented-control';
@@ -60,12 +61,14 @@ const MINUTE_INTERVALS = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30];
 
 export const App = () => {
   const [date, setDate] = useState(new Date(1598051730000));
+  const [tzOffsetInMinutes, setTzOffsetInMinutes] = useState(0);
   const [mode, setMode] = useState(MODE_VALUES[0]);
   const [show, setShow] = useState(false);
   const [color, setColor] = useState();
   const [display, setDisplay] = useState(DISPLAY_VALUES[0]);
   const [interval, setMinInterval] = useState(1);
   const [neutralButtonLabel, setNeutralButtonLabel] = useState(undefined);
+  const [disabled, setDisabled] = useState(false);
 
   // Windows-specific
   const [time, setTime] = useState(undefined);
@@ -109,7 +112,7 @@ export const App = () => {
     return (
       <SafeAreaView style={[backgroundStyle, {flex: 1}]}>
         <StatusBar barStyle="dark-content" />
-        <ScrollView>
+        <ScrollView testID="DateTimePickerScrollView">
           {global.HermesInternal != null && (
             <View style={styles.engine}>
               <Text testID="hermesIndicator" style={styles.footer}>
@@ -170,6 +173,12 @@ export const App = () => {
             </View>
             <View style={styles.header}>
               <ThemedText style={{margin: 10, flex: 1}}>
+                disabled (iOS only)
+              </ThemedText>
+              <Switch value={disabled} onValueChange={setDisabled} />
+            </View>
+            <View style={styles.header}>
+              <ThemedText style={{margin: 10, flex: 1}}>
                 neutralButtonLabel (android only)
               </ThemedText>
               <ThemedTextInput
@@ -193,7 +202,7 @@ export const App = () => {
                   setShow(true);
                   setTimeout(() => {
                     setShow(false);
-                  }, 5000);
+                  }, 6000);
                 }}
                 title="Show and dismiss picker!"
               />
@@ -223,10 +232,30 @@ export const App = () => {
                 title="hide picker"
               />
             </View>
+            <View style={styles.button}>
+              <Button
+                testID="setTzZero"
+                onPress={() => {
+                  setTzOffsetInMinutes(0);
+                  setShow(true);
+                }}
+                title="setTzOffsetInMinutes to 0"
+              />
+            </View>
+            <View style={styles.button}>
+              <Button
+                testID="setTz"
+                onPress={() => {
+                  setTzOffsetInMinutes(60);
+                  setShow(true);
+                }}
+                title="setTzOffsetInMinutes to 60"
+              />
+            </View>
             {show && (
               <DateTimePicker
                 testID="dateTimePicker"
-                timeZoneOffsetInMinutes={0}
+                timeZoneOffsetInMinutes={tzOffsetInMinutes}
                 minuteInterval={interval}
                 value={date}
                 mode={mode}
@@ -236,6 +265,7 @@ export const App = () => {
                 style={styles.iOsPicker}
                 textColor={color || undefined}
                 neutralButtonLabel={neutralButtonLabel}
+                disabled={disabled}
               />
             )}
           </View>

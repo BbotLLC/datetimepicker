@@ -1,11 +1,20 @@
-### 🚧🚧 Looking for collaborators 🚧🚧
+### 🚧🚧 Looking for collaborators and backers 🚧🚧
 
 See this [issue](https://github.com/react-native-datetimepicker/datetimepicker/issues/313)
 
-This repository was moved out of the react native community GH organization, in accordance to [this proposal](https://github.com/react-native-community/discussions-and-proposals/issues/176).
-The module is still published on `npm` under the old namespace (as documented) but will be published under a new namespace soon, with a major version bump.
+### Backers
+
+Support us with a monthly donation and help us continue our activities. [Become a backer on OpenCollective](https://opencollective.com/react-native-datetimepicker) or [sponsor us on GitHub Sponsors](https://github.com/sponsors/react-native-datetimepicker)
+
+<a href="https://opencollective.com/react-native-datetimepicker/donate" target="_blank">
+  <img src="https://opencollective.com/react-native-datetimepicker/backers.svg?width=890" width=890 />
+</a>
+
 
 # React Native DateTimePicker
+
+This repository was moved out of the react native community GH organization, in accordance to [this proposal](https://github.com/react-native-community/discussions-and-proposals/issues/176).
+The module is still published on `npm` under the old namespace (as documented) but will be published under a new namespace at some point, with a major version bump.
 
 ![CircleCI Status][circle-ci-status]
 ![Supports Android and iOS][support-badge]
@@ -54,17 +63,19 @@ React Native date & time picker component for iOS, Android and Windows.
     - [`value` (`required`)](#value-required)
     - [`maximumDate` (`optional`)](#maximumdate-optional)
     - [`minimumDate` (`optional`)](#minimumdate-optional)
-    - [`timeZoneOffsetInMinutes` (`optional`, `iOS only`)](#timezoneoffsetinminutes-optional-ios-only)
+    - [`timeZoneOffsetInMinutes` (`optional`, `iOS or Android only`)](#timezoneoffsetinminutes-optional-ios-and-android-only)
     - [`timeZoneOffsetInSeconds` (`optional`, `Windows only`)](#timezoneoffsetinsecond-optional-windows-only)
     - [`dayOfWeekFormat` (`optional`, `Windows only`)](#dayOfWeekFormat-optional-windows-only)
     - [`dateFormat` (`optional`, `Windows only`)](#dateFormat-optional-windows-only)
     - [`firstDayOfWeek` (`optional`, `Windows only`)](#firstDayOfWeek-optional-windows-only)
     - [`textColor` (`optional`, `iOS only`)](#textColor-optional-ios-only)
+    - [`themeVariant` (`optional`, `iOS only`)](#themeVariant-optional-ios-only)
     - [`locale` (`optional`, `iOS only`)](#locale-optional-ios-only)
     - [`is24Hour` (`optional`, `Windows and Android only`)](#is24hour-optional-windows-and-android-only)
     - [`neutralButtonLabel` (`optional`, `Android only`)](#neutralbuttonlabel-optional-android-only)
     - [`minuteInterval` (`optional`)](#minuteinterval-optional)
     - [`style` (`optional`, `iOS only`)](#style-optional-ios-only)
+    - [`disabled` (`optional`, `iOS only`)](#disabled-optional-ios-only)
   - [Migration from the older components](#migration-from-the-older-components)
     - [DatePickerIOS](#datepickerios)
     - [DatePickerAndroid](#datepickerandroid)
@@ -259,7 +270,7 @@ Defines the minimum date that can be selected. Note that on Android, this only w
 <RNDateTimePicker minimumDate={new Date(1950, 0, 1)} />
 ```
 
-#### `timeZoneOffsetInMinutes` (`optional`, `iOS only`)
+#### `timeZoneOffsetInMinutes` (`optional`, `iOS and Android only`)
 
 Allows changing of the timeZone of the date picker. By default it uses the device's time zone.
 
@@ -312,6 +323,21 @@ Allows changing of the textColor of the date picker. Has effect only when `displ
 <RNDateTimePicker textColor="red" />
 ```
 
+#### `themeVariant` (`optional`, `iOS only`)
+
+Allows overriding system theme variant (dark or light mode) used by the date picker.
+
+:warning: Has effect only on iOS 14 and later. On iOS 13 & less, use `textColor` to make the picker dark-theme compatible
+
+List of possible values:
+
+- `"light"`
+- `"dark"`
+
+```js
+<RNDateTimePicker themeVariant="light" />
+```
+
 #### `locale` (`optional`, `iOS only`)
 
 Allows changing of the locale of the component. By default it uses the device's locale.
@@ -361,6 +387,10 @@ This means that eg. if the device has dark mode turned on, and your screen backg
 ```js
 <RNDateTimePicker style={{flex: 1}} />
 ```
+
+#### `disabled` (`optional`, `iOS only`)
+
+If true, the user won't be able to interact with the view.
 
 ## Migration from the older components
 
@@ -699,9 +729,12 @@ Add `PackageProviders().Append(winrt::DateTimePicker::ReactPackageProvider());` 
 
 ## Running the example app
 
-1. Install required pods in `example/ios` by running `npx pod-install`
-1. Run `npm start` to start Metro Bundler
-1. Run `npm run start:ios` or `npm run start:android` or `npm run start:windows` (or `yarn run start:windows`)
+1. Run `yarn` in repo root
+2. Run `cd example`
+3. Install required pods by running `npx pod-install`
+4. Run `yarn start` to start Metro Bundler
+5. Run `yarn run start:ios` or `yarn run start:android` or `yarn run start:windows`
+6. To do any development on the library, open the example project (in the example folder!) in xCode or Android Studio. The example project depends on the library code, which you can edit and observe any changes in the example project.
 
 [circle-ci-badge]: https://img.shields.io/circleci/project/github/react-native-community/datetimepicker/master.svg?style=flat-square
 [circle-ci-status]: https://circleci.com/gh/react-native-datetimepicker/datetimepicker.svg?style=svg

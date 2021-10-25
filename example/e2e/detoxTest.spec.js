@@ -130,6 +130,62 @@ describe('Example', () => {
     }
   });
 
+  async function userOpensPickerSetTimeZoneOffset({
+    mode,
+    display,
+    interval,
+    type,
+  }) {
+    await element(by.text(mode)).tap();
+    await element(by.text(display)).tap();
+    if (interval) {
+      await element(by.text(String(interval))).tap();
+    }
+    await element(by.id(type)).tap();
+  }
+
+  it('should update dateTimeText when date changes and set setTzOffsetInMinutes to 0', async () => {
+    await userOpensPickerSetTimeZoneOffset({
+      mode: 'date',
+      display: 'default',
+      type: 'setTzZero',
+    });
+    const dateText = getDateText();
+
+    if (isIOS()) {
+      const testElement = getDateTimePickerIOS();
+      await testElement.setColumnToValue(0, 'November');
+      await testElement.setColumnToValue(1, '3');
+      await testElement.setColumnToValue(2, '1800');
+
+      await expect(dateText).toHaveText('11/03/1800');
+    } else {
+      await userTapsOkButtonAndroid();
+      await expect(dateText).toHaveText('08/21/2020');
+    }
+  });
+
+  it('setTz should change time text when setTzOffsetInMinutes is 60 minutes', async () => {
+    await element(by.id('DateTimePickerScrollView')).scrollTo('bottom');
+    await userOpensPickerSetTimeZoneOffset({
+      mode: 'time',
+      display: 'default',
+      type: 'setTz',
+    });
+    const timeText = getTimeText();
+
+    if (isIOS()) {
+      const testElement = getDateTimePickerIOS();
+      await testElement.setColumnToValue(0, '12');
+      await testElement.setColumnToValue(1, '30');
+      await testElement.setColumnToValue(2, 'AM');
+    } else {
+      await userChangesMinuteValue();
+      await userTapsOkButtonAndroid();
+    }
+    await expect(timeText).toHaveText('23:30');
+  });
+
   it(':android: given we specify neutralButtonLabel, tapping the corresponding button sets date to the beginning of the unix time epoch', async () => {
     await elementById('neutralButtonLabelTextInput').typeText('clear');
     await userOpensPicker({mode: 'time', display: 'default'});
@@ -141,9 +197,9 @@ describe('Example', () => {
 
   it(':android: when component unmounts, dialog is dismissed', async () => {
     await elementById('showAndDismissPickerButton').tap();
-    await wait(2000);
-    await expect(getDatePickerAndroid()).toBeVisible();
-    await wait(5000);
+    await wait(1000);
+    await expect(getDatePickerAndroid()).toExist();
+    await wait(6000);
 
     await expect(getDatePickerAndroid()).toNotExist();
   });

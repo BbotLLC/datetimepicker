@@ -1,6 +1,6 @@
 {
   "name": "@react-native-community/datetimepicker",
-  "version": "3.0.9",
+  "version": "3.5.2",
   "description": "DateTimePicker component for React Native",
   "main": "./src/index.js",
   "types": "src/index.d.ts",
@@ -18,7 +18,7 @@
   "scripts": {
     "start": "react-native start",
     "start:android": "react-native run-android --no-jetifier",
-    "start:ios": "react-native run-ios",
+    "start:ios": "react-native run-ios --project-path example/ios",
     "start:windows": "react-native start --use-react-native-windows",
     "test": "jest ./test",
     "posttest": "npm run lint",
@@ -67,7 +67,7 @@
     "@semantic-release/git": "^9.0.0",
     "@testing-library/react-native": "^7.0.1",
     "babel-jest": "^26.0.1",
-    "detox": "^16.5.1",
+    "detox": "16.9.2",
     "eslint": "^7.6.0",
     "eslint-plugin-prettier": "^3.1.2",
     "flow-bin": "^0.113.0",
@@ -82,11 +82,6 @@
     "react-native-windows": "^0.62.0-0",
     "react-test-renderer": "16.11.0",
     "semantic-release": "^17.1.1"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.3",
-    "react-native": ">=0.60",
-    "react-native-windows": ">=0.62"
   },
   "dependencies": {
     "invariant": "^2.2.4",
