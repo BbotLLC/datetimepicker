@@ -46,7 +46,7 @@ export default function RNDateTimePicker({
   });
   picker.on('close', () => {
     // null `event` object to mirror android/ios behaviour
-    onChange({ type: 'dismissed'}, value);
+    onChange({ type: 'dismissed'}, null);
     picker.$simplepickerWrapper.remove();
   });
 
