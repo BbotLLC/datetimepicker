@@ -119,6 +119,13 @@ export default function RNDateTimePicker(props: AndroidNativeProps) {
             nativeEvent: {},
           };
 
+          /* ====== BBOT Hacky DateTime Mode for android: =======*/
+          if(action === DISMISS_ACTION){
+            event.type = 'dismissed';
+            onChange(event);
+            return;
+          }
+
           if(mode === MODE_DATETIME){
             let timePicker = await getPicker({
               mode: 'time',
@@ -136,6 +143,8 @@ export default function RNDateTimePicker(props: AndroidNativeProps) {
               minute = timePicker.minute;
             }
           }
+
+          /* ============================================  */
 
           switch (action) {
             case DATE_SET_ACTION:
