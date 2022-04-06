@@ -12,9 +12,9 @@ import {
   Switch,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import SegmentedControl from '@react-native-community/segmented-control';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Picker} from 'react-native-windows';
 import moment from 'moment';
 import {
@@ -24,6 +24,7 @@ import {
   ANDROID_DISPLAY,
   IOS_DISPLAY,
 } from '../src/constants';
+import * as RNLocalize from 'react-native-localize';
 
 const ThemedText = (props) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -42,7 +43,7 @@ const ThemedTextInput = (props) => {
 
   const TextElement = React.createElement(TextInput, props);
   return React.cloneElement(TextElement, {
-    style: [props.style, textColorByMode],
+    style: [props.style, styles.textInput, textColorByMode],
     placeholderTextColor: isDarkMode ? Colors.white : Colors.black,
   });
 };
@@ -60,15 +61,21 @@ const DISPLAY_VALUES = Platform.select({
 const MINUTE_INTERVALS = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30];
 
 export const App = () => {
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [tzOffsetInMinutes, setTzOffsetInMinutes] = useState(0);
+  // Sat, 13 Nov 2021 10:00:00 GMT (local: Saturday, November 13, 2021 11:00:00 AM GMT+01:00)
+  const sourceMoment = moment.unix(1636797600);
+  const sourceDate = sourceMoment.local().toDate();
+  const [date, setDate] = useState(sourceDate);
+  const [tzOffsetInMinutes, setTzOffsetInMinutes] = useState(undefined);
   const [mode, setMode] = useState(MODE_VALUES[0]);
   const [show, setShow] = useState(false);
-  const [color, setColor] = useState();
+  const [textColor, setTextColor] = useState();
+  const [accentColor, setAccentColor] = useState();
   const [display, setDisplay] = useState(DISPLAY_VALUES[0]);
   const [interval, setMinInterval] = useState(1);
   const [neutralButtonLabel, setNeutralButtonLabel] = useState(undefined);
   const [disabled, setDisabled] = useState(false);
+  const [minimumDate, setMinimumDate] = useState();
+  const [maximumDate, setMaximumDate] = useState();
 
   // Windows-specific
   const [time, setTime] = useState(undefined);
@@ -81,14 +88,17 @@ export const App = () => {
     '{dayofweek.abbreviated(2)}',
   );
 
+  const scrollRef = useRef(null);
+
   const handleResetPress = () => {
     setDate(undefined);
   };
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-
-    setShow(Platform.OS === 'ios');
+    if (Platform.OS === 'android') {
+      setShow(false);
+    }
     if (event.type === 'neutralButtonPressed') {
       setDate(new Date(0));
     } else {
@@ -108,11 +118,31 @@ export const App = () => {
     backgroundColor: isDarkMode ? Colors.dark : Colors.lighter,
   };
 
+  const toggleMinMaxDateInUTC = () => {
+    setTzOffsetInMinutes(0);
+
+    const startOfTodayUTC = sourceMoment.utc().startOf('day').toDate();
+    setMinimumDate(maximumDate ? undefined : startOfTodayUTC);
+    const endOfTomorrowUTC = sourceMoment
+      .utc()
+      .endOf('day')
+      .add(1, 'day')
+      .toDate();
+    setMaximumDate(minimumDate ? undefined : endOfTomorrowUTC);
+  };
+
   if (Platform.OS !== 'windows') {
     return (
       <SafeAreaView style={[backgroundStyle, {flex: 1}]}>
         <StatusBar barStyle="dark-content" />
-        <ScrollView testID="DateTimePickerScrollView">
+        <ScrollView
+          testID="DateTimePickerScrollView"
+          ref={scrollRef}
+          onContentSizeChange={() => {
+            if (Platform.OS === 'ios') {
+              scrollRef.current?.scrollToEnd({animated: true});
+            }
+          }}>
           {global.HermesInternal != null && (
             <View style={styles.engine}>
               <Text testID="hermesIndicator" style={styles.footer}>
@@ -128,6 +158,15 @@ export const App = () => {
             <View style={styles.header}>
               <ThemedText style={styles.text}>
                 Example DateTime Picker
+              </ThemedText>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <ThemedText selectable testID="timeInfo">
+                TZ: {RNLocalize.getTimeZone()}, original:{' '}
+                {moment(sourceDate).format('MM/DD/YYYY HH:mm')}
+              </ThemedText>
+              <ThemedText>
+                , TZOffset:{new Date().getTimezoneOffset() / 60}
               </ThemedText>
             </View>
             <ThemedText>mode prop:</ThemedText>
@@ -159,39 +198,48 @@ export const App = () => {
               }}
             />
             <View style={styles.header}>
-              <ThemedText style={{margin: 10, flex: 1}}>
+              <ThemedText style={styles.textLabel}>
                 text color (iOS only)
               </ThemedText>
               <ThemedTextInput
-                value={color}
-                style={{height: 60, flex: 1}}
+                value={textColor}
                 onChangeText={(text) => {
-                  setColor(text.toLowerCase());
+                  setTextColor(text.toLowerCase());
                 }}
-                placeholder="color"
+                placeholder="textColor"
               />
             </View>
             <View style={styles.header}>
-              <ThemedText style={{margin: 10, flex: 1}}>
+              <ThemedText style={styles.textLabel}>
+                accent color (iOS only)
+              </ThemedText>
+              <ThemedTextInput
+                value={accentColor}
+                onChangeText={(text) => {
+                  setAccentColor(text.toLowerCase());
+                }}
+                placeholder="accentColor"
+              />
+            </View>
+            <View style={styles.header}>
+              <ThemedText style={styles.textLabel}>
                 disabled (iOS only)
               </ThemedText>
               <Switch value={disabled} onValueChange={setDisabled} />
             </View>
             <View style={styles.header}>
-              <ThemedText style={{margin: 10, flex: 1}}>
+              <ThemedText style={styles.textLabel}>
                 neutralButtonLabel (android only)
               </ThemedText>
               <ThemedTextInput
                 value={neutralButtonLabel}
-                style={{height: 60, flex: 1}}
                 onChangeText={setNeutralButtonLabel}
                 placeholder="neutralButtonLabel"
                 testID="neutralButtonLabelTextInput"
               />
             </View>
-
             <View style={styles.header}>
-              <ThemedText style={{margin: 10, flex: 1}}>
+              <ThemedText style={styles.textLabel}>
                 [android] show and dismiss picker after 3 secs
               </ThemedText>
             </View>
@@ -207,8 +255,11 @@ export const App = () => {
                 title="Show and dismiss picker!"
               />
             </View>
-
-            <View style={styles.button}>
+            <View
+              style={[
+                styles.button,
+                {flexDirection: 'row', justifyContent: 'space-around'},
+              ]}>
               <Button
                 testID="showPickerButton"
                 onPress={() => {
@@ -216,40 +267,55 @@ export const App = () => {
                 }}
                 title="Show picker!"
               />
-            </View>
-
-            <View style={styles.header}>
-              <ThemedText testID="dateText" style={styles.dateTimeText}>
-                {moment.utc(date).format('MM/DD/YYYY')}
-              </ThemedText>
-              <Text> </Text>
-              <ThemedText testID="timeText" style={styles.dateTimeText}>
-                {moment.utc(date).format('HH:mm')}
-              </ThemedText>
               <Button
                 testID="hidePicker"
                 onPress={() => setShow(false)}
-                title="hide picker"
+                title="Hide picker!"
               />
+            </View>
+            <View
+              style={[
+                styles.header,
+                {flexDirection: 'row', justifyContent: 'space-around'},
+              ]}>
+              <ThemedText testID="dateText" style={styles.dateTimeText}>
+                {moment(date).format('MM/DD/YYYY')}
+              </ThemedText>
+              <Text> </Text>
+              <ThemedText testID="timeText" style={styles.dateTimeText}>
+                {moment(date).format('HH:mm')}
+              </ThemedText>
+              <Text> </Text>
+              <ThemedText style={styles.dateTimeText}>
+                tzOffset: {tzOffsetInMinutes ?? 'auto'}
+              </ThemedText>
             </View>
             <View style={styles.button}>
               <Button
-                testID="setTzZero"
+                testID="setTzOffsetToZero"
                 onPress={() => {
                   setTzOffsetInMinutes(0);
-                  setShow(true);
                 }}
                 title="setTzOffsetInMinutes to 0"
               />
             </View>
             <View style={styles.button}>
               <Button
-                testID="setTz"
+                testID="setTzOffset"
                 onPress={() => {
-                  setTzOffsetInMinutes(60);
+                  setTzOffsetInMinutes(120);
+                }}
+                title="setTzOffsetInMinutes to 120"
+              />
+            </View>
+            <View style={styles.button}>
+              <Button
+                testID="setMinMax"
+                onPress={() => {
+                  toggleMinMaxDateInUTC();
                   setShow(true);
                 }}
-                title="setTzOffsetInMinutes to 60"
+                title="toggleMinMaxDate"
               />
             </View>
             {show && (
@@ -257,13 +323,16 @@ export const App = () => {
                 testID="dateTimePicker"
                 timeZoneOffsetInMinutes={tzOffsetInMinutes}
                 minuteInterval={interval}
+                maximumDate={maximumDate}
+                minimumDate={minimumDate}
                 value={date}
                 mode={mode}
                 is24Hour
                 display={display}
                 onChange={onChange}
                 style={styles.iOsPicker}
-                textColor={color || undefined}
+                textColor={textColor || undefined}
+                accentColor={accentColor || undefined}
                 neutralButtonLabel={neutralButtonLabel}
                 disabled={disabled}
               />
@@ -458,6 +527,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  textLabel: {
+    margin: 10,
+    flex: 1,
+  },
+  textInput: {
+    height: 60,
+    flex: 1,
   },
   button: {
     alignItems: 'center',
